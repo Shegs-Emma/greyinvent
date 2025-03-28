@@ -42,6 +42,7 @@ const TodoLanding = () => {
     if (!storedTodos?.length) {
       handleTodosFetch();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storedTodos]);
 
   const handleTodosFetch = () => {

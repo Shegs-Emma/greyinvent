@@ -1,25 +1,44 @@
-"use client";
-
 import { ThunkDispatch, UnknownAction } from "@reduxjs/toolkit";
 import { setError, stopLoad } from "./appSlice";
 
+interface ErrorResponse {
+  response?: {
+    data?: {
+      customMessage?: string;
+      message?: string;
+      error?: string;
+    };
+  };
+  data?: {
+    message?: string;
+  };
+}
+
 export const handleError = (
-  err: any,
+  err: unknown,
   dispatch: ThunkDispatch<unknown, unknown, UnknownAction>
 ) => {
-  if (!err.response && !err.data) {
+  if (typeof err !== "object" || err === null) {
+    dispatch(setError("An unknown error occurred"));
+    return;
+  }
+
+  const errorObj = err as ErrorResponse;
+
+  if (!errorObj.response && !errorObj.data) {
     dispatch(
       setError("There seems to be an issue currently, please try again")
     );
-  } else if (!err.response) dispatch(setError(err.data.message));
-  else {
+  } else if (!errorObj.response) {
+    dispatch(setError(errorObj.data?.message || "An error occurred"));
+  } else {
     let msg =
-      err.response.data.customMessage ||
-      err.response.data.message ||
-      err.response.data;
-    if (typeof msg === "object") {
-      let myError = msg.error;
-      msg = myError;
+      errorObj.response.data?.customMessage ||
+      errorObj.response.data?.message ||
+      errorObj.response.data;
+
+    if (typeof msg === "object" && msg?.error) {
+      msg = msg.error;
     }
 
     dispatch(setError(msg));

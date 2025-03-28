@@ -1,5 +1,5 @@
 import { type ClassValue, clsx } from "clsx";
-import { toast } from "sonner";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
