@@ -1,8 +1,10 @@
 import { ChangeEvent, InputHTMLAttributes } from "react";
 
-interface CheckboxProps extends InputHTMLAttributes<HTMLInputElement> {}
-
-export function Checkbox({ checked, onChange, ...props }: CheckboxProps) {
+export function Checkbox({
+  checked,
+  onChange,
+  ...props
+}: InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
       type="checkbox"
