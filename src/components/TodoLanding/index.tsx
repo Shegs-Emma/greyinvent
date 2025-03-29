@@ -13,6 +13,7 @@ import { TodosInterface } from "../utils/interface";
 import { createTodo, fetchAllTodos } from "@/store/actions";
 import { generateId } from "@/lib/utils";
 import { FixedSizeList as List } from "react-window";
+import { toast } from "sonner";
 
 const TodoLanding = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -47,14 +48,20 @@ const TodoLanding = () => {
 
   const handleTodosFetch = () => {
     try {
+      const toastId = toast.loading("fetching tasks...");
       dispatch(fetchAllTodos())
         .unwrap()
         .then((res) => {
           if (res?.length) {
+            setTodos(res);
             localStorage.setItem("todos", JSON.stringify(res));
+            toast.success("Tasks fetched successfully", { id: toastId });
           }
         })
-        .catch((err) => err);
+        .catch((err) => {
+          toast.error("Tasks fetched successfully", { id: toastId });
+          return err;
+        });
     } catch (err) {
       return err;
     }
@@ -71,6 +78,7 @@ const TodoLanding = () => {
     ];
     setTodos(newTodos);
     setTodo("");
+    toast.success("Task added successfully");
     localStorage.setItem("todos", JSON.stringify(newTodos));
 
     const payload = {
@@ -96,6 +104,7 @@ const TodoLanding = () => {
     setTodos((prevTodos) => {
       const updatedTodos = prevTodos.filter((t) => t.id !== id);
       localStorage.setItem("todos", JSON.stringify(updatedTodos));
+      toast.success("Task removed successfully");
       return updatedTodos;
     });
   };
@@ -225,61 +234,12 @@ const TodoLanding = () => {
       </div>
 
       <div>
-        {/* {filteredTodos.map((t) => (
-          <Card
-            key={t.id}
-            className="flex items-center justify-between p-2 my-2"
-          >
-            <div className="flex items-center gap-2 text-[#1A202C]">
-              <Checkbox
-                checked={t.completed}
-                onChange={() => toggleTodo(t.id)}
-              />
-
-              {editingTodo === t.id ? (
-                <Input
-                  value={editTitle}
-                  onChange={(e) => setEditTitle(e.target.value)}
-                  onBlur={() => saveEdit(t.id)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      saveEdit(t.id);
-                    }
-                  }}
-                  autoFocus
-                  editing={true}
-                />
-              ) : (
-                <span className={t.completed ? "line-through" : ""}>
-                  {t.title}
-                </span>
-              )}
-            </div>
-            <div className="flex gap-2">
-              <Button
-                size="icon"
-                variant="ghost"
-                onClick={() => startEditing(t.id, t.title)}
-              >
-                <Edit className="w-4 h-4" />
-              </Button>
-              <Button
-                size="icon"
-                variant="destructive"
-                onClick={() => deleteTodo(t.id)}
-              >
-                <Trash className="w-4 h-4" />
-              </Button>
-            </div>
-          </Card>
-        ))} */}
-
         <List
-          height={300} // Adjust height based on UI
+          height={300}
           itemCount={filteredTodos.length}
-          itemSize={100} // Adjust based on item height
+          itemSize={100}
           width="100%"
-          itemData={filteredTodos} // Pass filtered todos
+          itemData={filteredTodos}
         >
           {Row}
         </List>
